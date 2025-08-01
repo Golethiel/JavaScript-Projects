@@ -21,5 +21,6 @@ function displayCount() {
 function resetCount() {
     count = 0;
     displayCount();
+    alert("Your follower count has been reset");
 }
 
