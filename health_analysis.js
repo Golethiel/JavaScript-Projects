@@ -105,7 +105,7 @@ function searchCondition() {
             resultDiv.innerHTML += `<h2>${condition.name}</h2>`;
             resultDiv.innerHTML += `<img src="${condition.imagesrc}" alt="hjh">`;
 
-            // the information is displayed in the HTML file
+            // the information is displayed in the webpage
             resultDiv.innerHTML += `<p><strong>Symptoms:</strong> ${symptoms}</p>`;
             resultDiv.innerHTML += `<p><strong>Prevention:</strong> ${prevention}</p>`;
             resultDiv.innerHTML += `<p><strong>Treatment:</strong> ${treatment}</p>`;
