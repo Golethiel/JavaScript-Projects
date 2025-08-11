@@ -82,47 +82,67 @@ function generateReport() {
 addPatientButton.addEventListener("click", addPatient);
 
 
+// will store the parsed JSON data
+let healthConditions = [];
+
+// attempt to fetch from the JSON file
+fetch('./health_analysis.json')
+    .then(response => {
+    console.log("Received response object.");
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })  
+    .then(data => {
+        healthConditions = data.conditions;
+        console.log('Data loaded successfully:', healthConditions);
+    })
+    .catch(error => {
+        console.error('There was a problem fetching the file:', error);
+    });
+
+
 // searches and fetches from the JSON file
 function searchCondition() {
+    console.log("Search Condition function was called.");
     // store the user condition
-    const input = document.getElementById('conditionInput').value.toLowerCase();
+    const input = document.getElementById('conditionInput').value;
+    const searchTerm = input.trim().toLowerCase();
+
+    const foundCondition = healthConditions.find(condition => 
+        condition.name.toLowerCase() === searchTerm
+    );
+
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = '';
 
-    // attempt to fetch from the JSON file
-    fetch('health_analysis.json')
-        .then(response => response.json())
-        .then(data => {
-        const condition = data.conditions.find(item => item.name.toLowerCase() === input);
+    if (foundCondition) {
+        resultDiv.innerHTML = `
+            <h2>${foundCondition.name}</h2>
+            <img src="${foundCondition.imagesrc}" alt="${foundCondition.name}">
+            
+            <h3>Symptoms</h3>
+            <ul>
+                ${foundCondition.symptoms.map(symptom => `<li>${symptom}</li>`).join('')}
+            </ul>
 
-        // if the condition is in the file,
-        // the information is initialized in variables
-        if (condition) {
-            const symptoms = condition.symptoms.join(', ');
-            const prevention = condition.prevention.join(', ');
-            const treatment = condition.treatment;
-
-            resultDiv.innerHTML += `<h2>${condition.name}</h2>`;
-            resultDiv.innerHTML += `<img src="${condition.imagesrc}" alt="hjh">`;
-
-            // the information is displayed in the webpage
-            resultDiv.innerHTML += `<p><strong>Symptoms:</strong> ${symptoms}</p>`;
-            resultDiv.innerHTML += `<p><strong>Prevention:</strong> ${prevention}</p>`;
-            resultDiv.innerHTML += `<p><strong>Treatment:</strong> ${treatment}</p>`;
-        } else {
-            // message to display if the condition is not in the file
-            resultDiv.innerHTML = 'Condition not found.';
-        }
-        })
-        // default error handling
-        .catch(error => {
-            console.error('Error:', error);
-            resultDiv.innerHTML = 'An error occurred while fetching data.';
-        });
+            <h3>Prevention</h3>
+            <ul>
+                ${foundCondition.prevention.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+            
+            <h3>Treatment</h3>
+            <p>${foundCondition.treatment}</p>
+        `;
+    } else {
+        resultDivDiv.innerHTML = `<p>No information found for "${input}". Please check your spelling.</p>`;
+    }
 }
 
+
 // add a listener to the search button
-btnSearch.addEventListener('click', searchCondition);
+document.getElementById('btnSearch').addEventListener('click', searchCondition);
 
 
 
